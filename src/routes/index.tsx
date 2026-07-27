@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
+import { MAX_WORDS, saveStudySet, type StudySet } from "@/lib/study-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,11 +29,43 @@ Osmosis is the diffusion of water across a semi-permeable membrane.`;
 function Index() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const generate = () => {
+  const trimmed = notes.trim();
+  const wordCount = trimmed ? trimmed.split(/\s+/).length : 0;
+  const tooLong = wordCount > MAX_WORDS;
+
+  const generate = async () => {
+    setError(null);
+    if (!trimmed) {
+      setError("Paste some notes before generating.");
+      return;
+    }
+    if (tooLong) {
+      setError(`That's ${wordCount} words — trim to ${MAX_WORDS} or fewer.`);
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => navigate({ to: "/flashcards" }), 600);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: trimmed }),
+      });
+      const data = (await res.json()) as StudySet & { error?: string };
+      if (!res.ok) throw new Error(data.error ?? "Generation failed.");
+      saveStudySet({ flashcards: data.flashcards, quiz: data.quiz });
+      toast.success(`Made ${data.flashcards.length} flashcards and a quiz.`);
+      navigate({ to: "/flashcards" });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Something went wrong.";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,25 +89,38 @@ function Index() {
         className="mt-6 min-h-[240px] w-full resize-y rounded-xl border border-border bg-card p-4 text-sm leading-relaxed text-card-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
       />
 
-      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{notes.trim() ? `${notes.trim().split(/\s+/).length} words` : "No notes yet"}</span>
+      <div className="mt-3 flex items-center justify-between text-xs">
+        <span className={tooLong ? "text-destructive" : "text-muted-foreground"}>
+          {wordCount ? `${wordCount} / ${MAX_WORDS} words` : "No notes yet"}
+        </span>
         <button
           type="button"
           onClick={() => setNotes(SAMPLE)}
-          className="underline underline-offset-4 transition hover:text-foreground"
+          className="text-muted-foreground underline underline-offset-4 transition hover:text-foreground"
         >
           Use sample notes
         </button>
       </div>
 
+      {error && (
+        <p className="mt-3 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-foreground">
+          {error}
+        </p>
+      )}
+
       <button
         type="button"
         onClick={generate}
-        disabled={loading}
+        disabled={loading || !trimmed || tooLong}
         className="mt-6 w-full rounded-xl bg-primary px-5 py-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
       >
         {loading ? "Generating…" : "Generate"}
       </button>
+      {loading && (
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Writing 10 flashcards and 15 questions…
+        </p>
+      )}
 
       <div className="mt-6 flex gap-3 text-sm">
         <Link

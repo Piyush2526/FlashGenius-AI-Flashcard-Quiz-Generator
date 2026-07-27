@@ -12,10 +12,10 @@ export const Route = createFileRoute("/")({
         content:
           "Paste your notes and instantly generate study flashcards and multiple-choice quizzes.",
       },
-      { property: "og:title", content: "Notecraft — Study smarter from your notes" },
+      { property: "og:title", content: "Notecraft — Turn notes into flashcards & quizzes" },
       {
         property: "og:description",
-        content: "Paste notes, generate flashcards and quizzes, and track your score.",
+        content: "Paste your notes and instantly generate study flashcards and multiple-choice quizzes.",
       },
     ],
   }),

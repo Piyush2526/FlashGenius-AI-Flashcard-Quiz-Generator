@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Notecraft — Turn notes into flashcards & quizzes" },
+      { name: "description", content: "Paste your notes and instantly generate study flashcards and multiple-choice quizzes." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Notecraft — Turn notes into flashcards & quizzes" },
+      { property: "og:description", content: "Paste your notes and instantly generate study flashcards and multiple-choice quizzes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Notecraft — Turn notes into flashcards & quizzes" },
+      { name: "twitter:description", content: "Paste your notes and instantly generate study flashcards and multiple-choice quizzes." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/be520812-9b5f-4ff6-bfd2-4f406b906307/id-preview-a8cbd7e8--64010311-8b60-4045-8dc3-ae9533ed6eaa.lovable.app-1785132905834.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/be520812-9b5f-4ff6-bfd2-4f406b906307/id-preview-a8cbd7e8--64010311-8b60-4045-8dc3-ae9533ed6eaa.lovable.app-1785132905834.png" },
     ],
     links: [
       {

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { flashcards } from "@/lib/study-data";
+import { useEffect, useState } from "react";
+import { loadStudySet, sampleStudySet, type Flashcard } from "@/lib/study-data";
 
 export const Route = createFileRoute("/flashcards")({
   head: () => ({
@@ -21,14 +21,22 @@ export const Route = createFileRoute("/flashcards")({
 });
 
 function FlashcardsPage() {
+  const [cards, setCards] = useState<Flashcard[]>(sampleStudySet.flashcards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const card = flashcards[index];
-  const progress = ((index + 1) / flashcards.length) * 100;
+
+  useEffect(() => {
+    setCards(loadStudySet().flashcards);
+    setIndex(0);
+    setFlipped(false);
+  }, []);
+
+  const card = cards[Math.min(index, cards.length - 1)];
+  const progress = ((index + 1) / cards.length) * 100;
 
   const go = (delta: number) => {
     setFlipped(false);
-    setIndex((i) => Math.min(flashcards.length - 1, Math.max(0, i + delta)));
+    setIndex((i) => Math.min(cards.length - 1, Math.max(0, i + delta)));
   };
 
   return (
@@ -38,7 +46,7 @@ function FlashcardsPage() {
           ← Notes
         </Link>
         <span>
-          Card {index + 1} of {flashcards.length}
+          Card {index + 1} of {cards.length}
         </span>
       </div>
 
@@ -67,7 +75,7 @@ function FlashcardsPage() {
               Question
             </span>
             <p className="mt-4 text-xl font-medium leading-snug text-card-foreground">
-              {card.front}
+              {card.question}
             </p>
             <span className="mt-6 text-xs text-muted-foreground">Tap to flip</span>
           </div>
@@ -75,7 +83,7 @@ function FlashcardsPage() {
             <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
               Answer
             </span>
-            <p className="mt-4 text-base leading-relaxed text-secondary-foreground">{card.back}</p>
+            <p className="mt-4 text-base leading-relaxed text-secondary-foreground">{card.answer}</p>
             <span className="mt-6 text-xs text-muted-foreground">Tap to flip back</span>
           </div>
         </div>
@@ -90,7 +98,7 @@ function FlashcardsPage() {
         >
           Previous
         </button>
-        {index === flashcards.length - 1 ? (
+        {index === cards.length - 1 ? (
           <Link
             to="/quiz"
             className="flex-1 rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground transition hover:opacity-90"

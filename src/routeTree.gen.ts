@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as FlashcardsRouteImport } from './routes/flashcards'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiGenerateRouteImport } from './routes/api/generate'
 
 const QuizRoute = QuizRouteImport.update({
   id: '/quiz',
@@ -28,35 +29,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGenerateRoute = ApiGenerateRouteImport.update({
+  id: '/api/generate',
+  path: '/api/generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/flashcards': typeof FlashcardsRoute
   '/quiz': typeof QuizRoute
+  '/api/generate': typeof ApiGenerateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/flashcards': typeof FlashcardsRoute
   '/quiz': typeof QuizRoute
+  '/api/generate': typeof ApiGenerateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/flashcards': typeof FlashcardsRoute
   '/quiz': typeof QuizRoute
+  '/api/generate': typeof ApiGenerateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/flashcards' | '/quiz'
+  fullPaths: '/' | '/flashcards' | '/quiz' | '/api/generate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/flashcards' | '/quiz'
-  id: '__root__' | '/' | '/flashcards' | '/quiz'
+  to: '/' | '/flashcards' | '/quiz' | '/api/generate'
+  id: '__root__' | '/' | '/flashcards' | '/quiz' | '/api/generate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FlashcardsRoute: typeof FlashcardsRoute
   QuizRoute: typeof QuizRoute
+  ApiGenerateRoute: typeof ApiGenerateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/generate': {
+      id: '/api/generate'
+      path: '/api/generate'
+      fullPath: '/api/generate'
+      preLoaderRoute: typeof ApiGenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FlashcardsRoute: FlashcardsRoute,
   QuizRoute: QuizRoute,
+  ApiGenerateRoute: ApiGenerateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
